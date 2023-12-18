@@ -1,9 +1,15 @@
-import sys
+import sys, os
 from PyQt5.QtWidgets import QApplication, QWidget, QPushButton, QVBoxLayout, QHBoxLayout, QLabel, QDesktopWidget, \
-    QDialog, QLineEdit, QMenuBar, QMenu, QAction, QMainWindow
-from PyQt5.QtGui import QPixmap, QPalette, QBrush, QFontMetrics, QFont, QFontMetricsF, QIntValidator
+    QDialog, QLineEdit, QMenuBar, QAction
+from PyQt5.QtGui import QPixmap, QPalette, QBrush, QFont, QFontMetricsF, QIntValidator
 from PyQt5.QtCore import pyqtSignal, Qt, QTimer
 from random import randint
+
+
+def get_resource_path(relative_path):
+    if hasattr(sys, '_MEIPASS'):
+        return os.path.join(sys._MEIPASS, relative_path)
+    return os.path.join(os.path.abspath("."), relative_path)
 
 
 class SettingsDialog(QDialog):
@@ -61,7 +67,8 @@ class Lottery(QWidget):
         # Set the background
         self.palette = QPalette()
         self.palette.setBrush(QPalette.Background,
-                              QBrush(QPixmap('bg.jpg').scaled(self.width, self.height, aspectRatioMode=False)))
+                              QBrush(QPixmap(get_resource_path(r'figs\bg.jpg')).scaled(self.width, self.height,
+                                                                                       aspectRatioMode=False)))
         self.setPalette(self.palette)
 
         # self.btn = QPushButton('开始抽奖', self)
@@ -87,7 +94,7 @@ class Lottery(QWidget):
 
     def resizeEvent(self, event):
         palette = QPalette()
-        palette.setBrush(QPalette.Background, QBrush(QPixmap('bg.jpg').scaled(self.size())))
+        palette.setBrush(QPalette.Background, QBrush(QPixmap(get_resource_path(r'figs\bg.jpg')).scaled(self.size())))
         self.setPalette(palette)
 
     def start_stop_lottery(self):
@@ -116,16 +123,18 @@ class Lottery(QWidget):
     def open_settings(self):
         dialog = SettingsDialog(self)
         if dialog.exec_():
-            self.max_number = int(dialog.input.text())
+            if dialog.input.hasAcceptableInput():
+                self.max_number = int(dialog.input.text())
 
     def resizeEvent(self, event):
         self.width = self.frameGeometry().width()
         self.height = self.frameGeometry().height()
         self.palette.setBrush(QPalette.Background,
-                              QBrush(QPixmap('bg.jpg').scaled(self.width, self.height, aspectRatioMode=False)))
+                              QBrush(QPixmap(get_resource_path(r'figs\bg.jpg')).scaled(self.width, self.height,
+                                                                                       aspectRatioMode=False)))
         self.setPalette(self.palette)
         font_size = int(45 * self.height / 600)
-        font = QFont('Helvetica', font_size)
+        font = QFont('SimHei', font_size)
         self.btn.setFont(font)
         self.label1.setFont(font)
         self.label1.setAlignment(Qt.AlignCenter)
@@ -137,7 +146,7 @@ class Lottery(QWidget):
     def showEvent(self, event):
 
         font_size = int(45 * self.height / 600)
-        font = QFont('Helvetica', font_size)
+        font = QFont('SimHei', font_size)
         self.btn.setFont(font)
         self.label1.setFont(font)
         self.label1.setAlignment(Qt.AlignCenter)
